@@ -1,0 +1,13 @@
+{
+  "name": "folio-editor-tests",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Optional browser regression tests for the Folio local writing editor",
+  "scripts": {
+    "test": "node --test folio/tests/test_frontend_state.cjs",
+    "test:browser": "node --test folio/tests/test_editor.cjs folio/tests/test_workflow.cjs folio/tests/test_desktop_quit.cjs"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  }
+}

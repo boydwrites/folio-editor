@@ -1,0 +1,19 @@
+#!/bin/sh
+set -eu
+gemma_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+gemma_python="${GEMMA_PYTHON:-python3}"
+if ! command -v "$gemma_python" >/dev/null 2>&1; then
+  if [ "${1:-}" = word ]; then
+    echo "Gemma: the document Python runtime is missing; set GEMMA_PYTHON to a Python with python-docx and lxml." >&2
+    exit 1
+  fi
+  gemma_python=$(command -v python3) || {
+    echo "Gemma: Python 3 is required." >&2
+    exit 1
+  }
+fi
+if [ "${1:-}" = word ]; then
+  shift
+  exec "$gemma_python" "$gemma_dir/gemma_word.py" "$@"
+fi
+exec "$gemma_python" "$gemma_dir/gemma_runtime.py" "$@"

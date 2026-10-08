@@ -1,0 +1,11 @@
+.DS_Store
+models/
+inputs/
+outputs/
+history/
+private/
+.env
+.env.*
+*.log
+__pycache__/
+*.py[cod]

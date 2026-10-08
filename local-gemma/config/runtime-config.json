@@ -1,0 +1,13 @@
+{
+  "model_repo": "lmstudio-community/gemma-4-31B-it-MLX-6bit",
+  "model_path": "lmstudio-community/gemma-4-31B-it-MLX-6bit",
+  "identifier": "gemma-local",
+  "context_length": 8192,
+  "parallel": 1,
+  "ttl_seconds": 900,
+  "reasoning": "off",
+  "gpu": "automatic",
+  "sampling": "model defaults",
+  "speculative_decoding": false,
+  "runtime_alias": "mlx-llm-mac-arm64-apple-metal-advsimd@1.9.1"
+}

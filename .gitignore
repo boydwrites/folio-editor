@@ -1,0 +1,24 @@
+# Confidential application data and generated documents
+folio/private/
+folio/outputs/
+folio/verification/
+folio/screenshots/
+folio/VERIFIED.md
+research/
+backups/
+local-gemma/verification/*
+!local-gemma/verification/model-manifest.json
+__pycache__/
+*.pyc
+.DS_Store
+
+# Local credentials and reinstallable dependencies
+.env
+.env.*
+!.env.example
+.venv/
+node_modules/
+
+# Rebuildable local macOS launcher
+Folio.app/
+folio/desktop/.build/
