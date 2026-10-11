@@ -55,7 +55,7 @@ try {
   if (!info || info.identifier !== request.identifier || info.path !== request.model_path || info.deviceIdentifier !== null ||
       info.contextLength !== request.context_length || info.ttlMs !== request.ttl_seconds * 1000 ||
       settings.maxParallelPredictions !== 1) {
-    emit({ type: 'error', message: 'The loaded model does not match Folio’s local settings. Stop the local runtime and retry.' });
+    emit({ type: 'error', message: 'The loaded model does not match the editor’s local settings. Stop the local runtime and retry.' });
     process.exitCode = 1;
   } else {
     // Count the actual model template before inference. Never trim notes,
@@ -109,7 +109,7 @@ try {
     const contextError = /context|too many tokens|token limit/i.test(String(error?.message || ''));
     emit({ type: 'error', message: contextError
       ? 'The notes, references, and feedback exceed the model’s context. Shorten the request or disable a reference; nothing was silently removed.'
-      : 'The local model request failed. Check the selected model and restart Folio if needed.' });
+      : 'The local model request failed. Check the selected model and restart the editor if needed.' });
     process.exitCode = 1;
   }
 } finally {

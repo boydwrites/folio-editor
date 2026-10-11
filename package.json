@@ -1,8 +1,8 @@
 {
-  "name": "folio-editor-tests",
+  "name": "private-writing-editor-tests",
   "version": "1.0.0",
   "private": true,
-  "description": "Optional browser regression tests for the Folio local writing editor",
+  "description": "Optional browser regression tests for Private Writing Editor",
   "scripts": {
     "test": "node --test folio/tests/test_frontend_state.cjs",
     "test:browser": "node --test folio/tests/test_editor.cjs folio/tests/test_workflow.cjs folio/tests/test_desktop_quit.cjs"

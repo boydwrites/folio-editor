@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Open or start the local Folio app without fetching any dependency."""
+"""Open or start Private Writing Editor locally without fetching any dependency."""
 import argparse
 import errno
 import fcntl
@@ -32,7 +32,7 @@ def running_port(port=None):
 
 
 def connect_or_start(port=None, *, reuse=True, **options):
-    """Reuse Folio, or find a free loopback port without stopping another app."""
+    """Reuse a running editor, or find a free loopback port without stopping another app."""
     opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
     for candidate in ([port] if port is not None else range(8765, 8785)):
         if reuse:
@@ -48,7 +48,7 @@ def connect_or_start(port=None, *, reuse=True, **options):
         except OSError as error:
             if error.errno != errno.EADDRINUSE or port is not None:
                 raise
-    raise OSError('No available Folio port between 8765 and 8784.')
+    raise OSError('No available port for the editor between 8765 and 8784.')
 
 
 def managed_server(port=None, private_dir=None):
@@ -56,7 +56,7 @@ def managed_server(port=None, private_dir=None):
     # An old terminal launcher does not have the ownership lock. Refuse to
     # open a second editor on the same writing rather than overwrite its saves.
     if private_dir is None and running_port() is not None:
-        raise OSError('Folio is already running in a browser or Terminal. Stop that copy with Control-C, then reopen Folio.')
+        raise OSError('The editor is already running in a browser or Terminal. Stop that copy with Control-C, then reopen the app.')
     directory = Path(private_dir or Path(__file__).resolve().parent / 'private')
     directory.mkdir(mode=0o700, parents=True, exist_ok=True)
     fd = os.open(directory / '.desktop.lock', os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
@@ -64,7 +64,7 @@ def managed_server(port=None, private_dir=None):
         try:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError as exc:
-            raise OSError('This Folio workspace is already open. Quit its other app window first.') from exc
+            raise OSError('This workspace is already open. Quit its other app window first.') from exc
         server, actual_port = connect_or_start(port, reuse=False, private_dir=directory)
         def control():
             # Only the parent holds this pipe's write end. EOF also handles a
@@ -96,7 +96,7 @@ def managed_server(port=None, private_dir=None):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Folio — a local writing editor')
+    parser = argparse.ArgumentParser(description='Private Writing Editor: private writing on this Mac')
     parser.add_argument('--port', type=int, help='Use a specific local port')
     parser.add_argument('--no-open', action='store_true')
     parser.add_argument('--managed', action='store_true', help='Desktop app: stop when the parent control pipe closes')
@@ -117,14 +117,14 @@ def main():
     try:
         server, args.port = connect_or_start(args.port)
     except OSError as error:
-        parser.exit(1, f'Folio could not start: {error}. Try a different --port.\n')
+        parser.exit(1, f'Private Writing Editor could not start: {error}. Try a different --port.\n')
     if server is None:
         if not args.no_open:
             open_browser(args.port)
-        print(f'Folio is already running at http://127.0.0.1:{args.port}')
+        print(f'Private Writing Editor is already running at http://127.0.0.1:{args.port}')
         return
-    print(f'Folio is ready at http://127.0.0.1:{args.port}', flush=True)
-    print('Keep this window open while using Folio. Press Control-C to stop the app.', flush=True)
+    print(f'Private Writing Editor is ready at http://127.0.0.1:{args.port}', flush=True)
+    print('Keep this window open while using the editor. Press Control-C to stop the app.', flush=True)
     if not args.no_open:
         threading.Timer(0.3, open_browser, [args.port]).start()
     try:

@@ -184,7 +184,7 @@ function render() {
   try {sessionStorage.setItem('folio-active', activeId);} catch {}
   $('#app').innerHTML = `
     <header class="app-header">
-      <a class="wordmark" href="#" aria-label="Folio home">Folio<span>.</span></a>
+      <a class="wordmark" href="#" aria-label="Private Writing Editor home">Private Writing Editor<span>.</span></a>
       <nav class="header-left" aria-label="Main"><button class="header-button" data-action="documents">Documents</button><button class="header-button" data-action="new" title="New document">${icons.plus}<span>New</span></button></nav>
       <nav class="header-right" aria-label="Tools"><button class="header-button" data-action="style" aria-label="Writing style"><span class="label-long">Writing style</span><span class="label-short">Style</span></button><button class="header-button" data-action="settings" aria-label="Settings"><span class="icon-narrow">${icons.gear}</span><span class="label-long">Settings</span></button><button class="button primary" data-action="export">Export</button><button class="icon-button panel-toggle" data-action="assistant" aria-label="Show or hide the assistant" title="Show or hide the assistant">${icons.panel}</button></nav>
     </header>
@@ -438,14 +438,14 @@ function turnMarkup(s,message,index) {
   }
   const took=Number.isFinite(message.durationMs)?`<span class="took">${tookText(message.durationMs,message.status==='failed'?'after':'took')}</span>`:'';
   const meta=[took,time].filter(Boolean).join('<span aria-hidden="true"> · </span>');
-  const plan=message.plan?`<p class="plan-note"><strong>Folio decided:</strong> ${esc(message.plan)}</p>`:'';
+  const plan=message.plan?`<p class="plan-note"><strong>The assistant decided:</strong> ${esc(message.plan)}</p>`:'';
   // A request you stopped yourself is not a problem, and its text is already back in the composer.
   if(message.stopped)return `<div class="turn turn-assistant">${plan}<p class="stopped-note">${esc(message.content)}</p><div class="turn-meta">${meta}</div></div>`;
   if(message.status==='failed'||message.status==='stale') {
     const last=index===s.history.length-1;
     return `<div class="turn turn-assistant">${plan}<div class="problem-card"><p>${esc(message.content)}</p>${last&&!generation?`<button class="chip-button" data-retry="${index}">Try again</button>`:''}</div><div class="turn-meta">${meta}</div></div>`;
   }
-  if(message.unchanged||/^No changes\. The result matched your current text/.test(message.content))return `<div class="turn turn-assistant">${plan}<p class="outcome-note">${esc(message.unchanged?message.content:'Folio\'s revision matched your current text, so nothing was changed.')}</p><div class="turn-meta">${meta}</div></div>`;
+  if(message.unchanged||/^No changes\. The result matched your current text/.test(message.content))return `<div class="turn turn-assistant">${plan}<p class="outcome-note">${esc(message.unchanged?message.content:'The assistant\'s revision matched your current text, so nothing was changed.')}</p><div class="turn-meta">${meta}</div></div>`;
   const edit=message.editId&&s.edits.find(e=>e.id===message.editId);
   const body=edit?editCard(s,edit):`<div class="message-body">${E.render(message.content)}</div>`;
   const copy=edit?'':`<button class="meta-button" data-copy="${index}">Copy</button>`;
@@ -550,7 +550,7 @@ async function generate(mode, instruction = active()?.composerDrafts?.[mode] || 
     const applied = W.applyResult(s,request,result.text);
     if (applied.kind==='stale') {
       userMessage.status='stale';
-      s.history.push({role:'assistant',content:s.status==='final'?'The document was locked while Folio was working, so this revision was not applied. Your writing is as you left it.':'You changed the document while Folio was working, so this revision was not applied. Your writing is as you left it.',status:'stale',...finished()});
+      s.history.push({role:'assistant',content:s.status==='final'?'The document was locked while the assistant was working, so this revision was not applied. Your writing is as you left it.':'You changed the document while the assistant was working, so this revision was not applied. Your writing is as you left it.',status:'stale',...finished()});
     } else {
       let edit;
       if (applied.kind==='edit') {
@@ -588,9 +588,9 @@ async function generate(mode, instruction = active()?.composerDrafts?.[mode] || 
 function unchangedMessage(instruction,scope) {
   const preset=rewritePresets.find(p=>p.instruction===instruction),target=scope==='selection'?'the selected passage':'your document';
   if(preset?.label==='Proofread')return `No errors found in ${target}. Nothing was changed.`;
-  if(preset?.auto)return `Folio's revision matched your current text, so ${target} is unchanged.`;
-  if(preset)return `Folio found nothing to ${preset.label.toLowerCase()} in ${target}. Nothing was changed.`;
-  return `Folio's revision matched your current text, so ${target} is unchanged. If you expected a change, try describing it more specifically.`;
+  if(preset?.auto)return `The assistant's revision matched your current text, so ${target} is unchanged.`;
+  if(preset)return `The assistant found nothing to ${preset.label.toLowerCase()} in ${target}. Nothing was changed.`;
+  return `The assistant's revision matched your current text, so ${target} is unchanged. If you expected a change, try describing it more specifically.`;
 }
 async function cancelGeneration() {
   if (!generation || generation.cancelled) return;
@@ -848,7 +848,7 @@ function friendlyLabel(label='') {
   const names={'Imported notes':'Imported','Exported document':'Exported','Before restore':'Before restoring','Before locking':'Before locking',
     'Before undoing AI edit':'Before undoing an edit','Before reapplying AI edit':'Before reapplying an edit','Edit undone':'Undid an edit','Edit reapplied':'Reapplied an edit',
     'Edit undone · previous wording restored':'Undid an edit','Before AI edit':'Before an edit','AI edit':'After an edit',
-    // Written when an older Folio's pending AI draft became the working text.
+    // Written when an older version's pending AI draft became the working text.
     'Restored suggestion':'Earlier AI draft','Before restored suggestion':'Before the earlier AI draft'};
   if(label.startsWith('Restored: '))return 'Restored “'+label.slice(10)+'”';
   return names[label]||label||'Saved version';
@@ -921,7 +921,7 @@ function bindExportFields(changed) {
   $$('[data-setting]').forEach(input=>input.onchange=()=>{const key=input.dataset.setting;state.settings[key]=input.type==='checkbox'?input.checked:['fontSize','lineSpacing'].includes(key)?Number(input.value):input.value;queueSave();if($('#export-summary'))$('#export-summary').textContent=`${state.settings.font} · ${state.settings.fontSize} pt · ${state.settings.pageSize==='a4'?'A4':'Letter'} · ${state.settings.lineSpacing} line spacing`;changed?.();});
 }
 function settingsModal() {
-  modal('Settings',`<h3>Local model</h3><label class="field">Model<select id="model-select" aria-label="Model">${models.length?models.map(m=>`<option value="${m.id}" ${state.settings.model===m.id?'selected':''}>${esc(m.name)}</option>`).join(''):'<option value="">No downloaded models found</option>'}</select></label><button class="text-link" id="refresh-models">Refresh models</button><p class="muted">Runs entirely on this Mac. Nothing is sent over the internet.</p><h3>Word export</h3>${exportFields()}<details class="privacy-details"><summary>Privacy and storage</summary><p>Writing and examples are stored locally in Folio’s private folder. They are not encrypted by Folio and are excluded from the GitHub source backup. Document contents never leave this Mac through Folio. Exported files follow your browser’s download settings.</p></details>`,[{label:'Done',primary:true,run:closeModal}]);
+  modal('Settings',`<h3>Local model</h3><label class="field">Model<select id="model-select" aria-label="Model">${models.length?models.map(m=>`<option value="${m.id}" ${state.settings.model===m.id?'selected':''}>${esc(m.name)}</option>`).join(''):'<option value="">No downloaded models found</option>'}</select></label><button class="text-link" id="refresh-models">Refresh models</button><p class="muted">Runs entirely on this Mac. Nothing is sent over the internet.</p><h3>Word export</h3>${exportFields()}<details class="privacy-details"><summary>Privacy and storage</summary><p>Writing and examples are stored locally in the editor’s private folder. They are not encrypted by the editor and are excluded from the GitHub source backup. Document contents never leave this Mac through the editor. Exported files follow your browser’s download settings.</p></details>`,[{label:'Done',primary:true,run:closeModal}]);
   bindExportFields();
   $('#model-select').onchange=e=>{if(generation){e.target.value=state.settings.model;notice('Stop the current request before changing models.');return;}state.settings.model=e.target.value;queueSave();};
   $('#refresh-models').onclick=async()=>{try{await refreshModels();settingsModal();}catch(e){notice(e.message);}};
@@ -931,7 +931,7 @@ async function refreshModels() {
   if(!models.some(m=>m.id===state.settings.model)){const model=models.find(m=>m.recommended)||models[0];if(model){state.settings.model=model.id;queueSave();}}
 }
 function styleModal() {
-  modal('Writing style',`<label class="field">Writing preferences<textarea id="voice" rows="5" placeholder="Describe how you write: voice, rhythm, words you use and avoid. Guidance for specific kinds of writing (stories, essays, emails) is applied only when it fits.">${esc(state.settings.voice)}</textarea></label><h3>Examples</h3><p class="muted">Checked examples teach Folio your style. Their content never ends up in your document.</p><div class="example-list">${state.examples.map(e=>`<div class="example-row"><label><input type="checkbox" data-example-toggle="${e.id}" ${e.enabled!==false?'checked':''}><span>${esc(e.name || 'Untitled example')}<small>${e.type==='pair'?'Before and after':'Writing sample'}${state.settings.exampleDrafts?.[e.id]?' · Unfinished changes':''}</small></span></label><button data-example-edit="${e.id}">Edit</button><button data-example-remove="${e.id}">Remove</button></div>`).join('') || '<p class="muted">No examples yet.</p>'}</div><div class="inline-actions"><button class="button secondary" id="add-writing">${state.settings.exampleDrafts?.['new-writing']?'Continue sample':'Add sample'}</button><button class="button secondary" id="add-pair">${state.settings.exampleDrafts?.['new-pair']?'Continue before & after':'Add before & after'}</button></div>${['new-writing','new-pair'].filter(slot=>state.settings.exampleDrafts?.[slot]).map(slot=>`<p class="draft-note">Unfinished ${slot==='new-pair'?'before & after':'sample'} saved. <button class="text-link" data-discard-draft="${slot}">Discard it</button></p>`).join('')}`,[{label:'Done',primary:true,run:closeModal}]);
+  modal('Writing style',`<label class="field">Writing preferences<textarea id="voice" rows="5" placeholder="Describe how you write: voice, rhythm, words you use and avoid. Guidance for specific kinds of writing (stories, essays, emails) is applied only when it fits.">${esc(state.settings.voice)}</textarea></label><h3>Examples</h3><p class="muted">Checked examples teach the assistant your style. Their content never ends up in your document.</p><div class="example-list">${state.examples.map(e=>`<div class="example-row"><label><input type="checkbox" data-example-toggle="${e.id}" ${e.enabled!==false?'checked':''}><span>${esc(e.name || 'Untitled example')}<small>${e.type==='pair'?'Before and after':'Writing sample'}${state.settings.exampleDrafts?.[e.id]?' · Unfinished changes':''}</small></span></label><button data-example-edit="${e.id}">Edit</button><button data-example-remove="${e.id}">Remove</button></div>`).join('') || '<p class="muted">No examples yet.</p>'}</div><div class="inline-actions"><button class="button secondary" id="add-writing">${state.settings.exampleDrafts?.['new-writing']?'Continue sample':'Add sample'}</button><button class="button secondary" id="add-pair">${state.settings.exampleDrafts?.['new-pair']?'Continue before & after':'Add before & after'}</button></div>${['new-writing','new-pair'].filter(slot=>state.settings.exampleDrafts?.[slot]).map(slot=>`<p class="draft-note">Unfinished ${slot==='new-pair'?'before & after':'sample'} saved. <button class="text-link" data-discard-draft="${slot}">Discard it</button></p>`).join('')}`,[{label:'Done',primary:true,run:closeModal}]);
   $('#voice').oninput=e=>{state.settings.voice=e.target.value;queueSave();};
   $('#add-writing').onclick=()=>exampleModal(null,'writing');$('#add-pair').onclick=()=>exampleModal(null,'pair');
   $$('[data-discard-draft]').forEach(b=>b.onclick=()=>{delete state.settings.exampleDrafts[b.dataset.discardDraft];queueSave();styleModal();notice('Draft discarded.');});
@@ -1005,6 +1005,6 @@ async function init() {
     if(!activeId)newSession();else render();
     if(recovered)queueSave();
     await refreshModels().catch(e=>notice(e.message));
-  } catch(e){$('#app').innerHTML=`<main class="boot"><h1>Folio</h1><p>${esc(e.message)}</p><button class="button primary" id="retry-connection">Try again</button></main>`;$('#retry-connection').onclick=init;}
+  } catch(e){$('#app').innerHTML=`<main class="boot"><h1>Private Writing Editor</h1><p>${esc(e.message)}</p><button class="button primary" id="retry-connection">Try again</button></main>`;$('#retry-connection').onclick=init;}
 }
 init();

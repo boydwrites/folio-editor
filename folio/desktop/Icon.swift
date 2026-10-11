@@ -20,7 +20,7 @@ func color(_ hex: String) -> NSColor {
 }
 
 func path(_ data: String) throws -> NSBezierPath {
-    // Folio's logo uses straight SVG segments. Fail clearly if the logo is
+    // The logo uses straight SVG segments. Fail clearly if the logo is
     // replaced with a shape that needs a different renderer.
     let expression = try NSRegularExpression(pattern: "[A-Za-z]|[-+]?(?:[0-9]*\\.)?[0-9]+")
     let tokens = expression.matches(in: data, range: NSRange(data.startIndex..., in: data)).map {

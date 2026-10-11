@@ -838,7 +838,7 @@ test('You decide asks the model for a plan, applies it, and shows what it chose'
     assert.deepEqual(bodies.map(b=>b.mode),['discuss','revise']);
     assert.match(bodies[0].instruction,/decide the single change/);
     assert.equal(bodies[1].instruction,'Replace the vague verb in the first sentence.');
-    assert.match(await h.page.locator('.plan-note').innerText(),/Folio decided: Replace the vague verb in the first sentence\./);
+    assert.match(await h.page.locator('.plan-note').innerText(),/The assistant decided: Replace the vague verb in the first sentence\./);
     const saved=await h.state();assert.equal(saved.sessions[0].draft,initial.replace('discussed','reviewed'));
     assert.equal(saved.sessions[0].edits[0].instruction,'Replace the vague verb in the first sentence.');
   }finally{await h.close();}

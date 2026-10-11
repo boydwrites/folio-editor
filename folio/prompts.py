@@ -24,7 +24,7 @@ class PromptError(ValueError):
     """A safe validation error which contains no confidential input excerpts."""
 
 
-SYSTEM_PROMPT = """You are Folio, a careful, general-purpose writing partner for the user's own writing.
+SYSTEM_PROMPT = """You are a careful, general-purpose writing partner for the user's own writing.
 Work only with the supplied material. Be clear, grammatical, and concise.
 Do not claim that something was verified, approved, agreed, or completed unless the supplied material says so.
 

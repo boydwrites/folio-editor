@@ -1,4 +1,4 @@
-"""Local-only text import and clean Word exports for Folio.
+"""Local-only text import and clean Word exports for the editor.
 
 Imports never follow document links or execute embedded content. Template
 imports copy a small set of formatting values into a fresh document, never
@@ -171,7 +171,7 @@ def extract_text(name: str, data: bytes) -> str:
                     raise ValueError("This PDF page is too complex to import. Save a text-only copy.")
                 value = page.extract_text() or ""
                 if not value.strip():
-                    raise ValueError("This PDF has a page with no selectable text, which usually means it was scanned. Folio can't read scanned pages. Paste the text, or import a text-based copy.")
+                    raise ValueError("This PDF has a page with no selectable text, which usually means it was scanned. The editor can't read scanned pages. Paste the text, or import a text-based copy.")
                 size += len(value)
                 if size > MAX_TEXT_CHARS:
                     raise ValueError("This document is too long. Import up to 500,000 characters at a time.")
@@ -183,7 +183,7 @@ def extract_text(name: str, data: bytes) -> str:
             raise ValueError("PDF import is unavailable in this Python environment. Paste the text, or import a Word file.") from None
         except Exception:
             raise ValueError("This PDF could not be read. Save a text-based copy or paste your notes.") from None
-    raise ValueError("Folio can import .txt, .md, .docx, or text-based .pdf files.")
+    raise ValueError("The editor can import .txt, .md, .docx, or text-based .pdf files.")
 
 
 def _number(value, default: float, lower: float, upper: float) -> float:

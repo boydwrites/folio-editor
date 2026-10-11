@@ -40,7 +40,7 @@
     if (request.scope === 'selection') {
       const chars = Array.from(request.base);
       const { start, end } = request.selectionRange;
-      if (chars.slice(start, end).join('') !== request.selection) throw new Error('The selected passage changed while Folio was working, so nothing was applied. Select it again and retry.');
+      if (chars.slice(start, end).join('') !== request.selection) throw new Error('The selected passage changed while the assistant was working, so nothing was applied. Select it again and retry.');
       draft = chars.slice(0, start).join('') + text + chars.slice(end).join('');
     }
     if (draft === session.draft) return { kind: 'unchanged', text: draft };

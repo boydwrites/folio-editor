@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Folio's private, loopback-only application server.
+"""The editor's private, loopback-only application server.
 
 No external service, analytics, remote asset, transcript logging, or arbitrary
 filesystem endpoint. All mutations require the per-process browser capability.
@@ -143,7 +143,7 @@ class FolioServer(ThreadingHTTPServer):
 
     def __init__(self, address=("127.0.0.1", 8765), private_dir=None, static_dir=None, adapter=None):
         if address[0] != "127.0.0.1":
-            raise ValueError("Folio may bind only to 127.0.0.1.")
+            raise ValueError("The editor may bind only to 127.0.0.1.")
         self.token = secrets.token_urlsafe(32)
         self.store = PrivateStore(private_dir or ROOT / "private")
         self.static_dir = Path(static_dir or ROOT / "static").resolve()
@@ -222,7 +222,7 @@ class Handler(BaseHTTPRequestHandler):
         if mutation:
             tokens = self.headers.get_all("X-Folio-Token", [])
             if len(tokens) != 1 or not hmac.compare_digest(tokens[0], self.server.token):
-                raise APIError("Your local session expired. Reload Folio and try again.", 403)
+                raise APIError("Your local session expired. Reload the editor and try again.", 403)
 
     def _body(self):
         if self.headers.get("Transfer-Encoding"):
@@ -403,7 +403,7 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Folio: private writing on this Mac.")
+    parser = argparse.ArgumentParser(description="Private Writing Editor: private writing on this Mac.")
     parser.add_argument("--port", type=int, default=8765)
     args = parser.parse_args()
     if not 1 <= args.port <= 65535:
@@ -412,8 +412,8 @@ def main():
     try:
         server = FolioServer(("127.0.0.1", args.port))
     except OSError:
-        parser.exit(1, "Folio could not open its local port. Another instance may already be running.\n")
-    print(f"Folio is ready at http://127.0.0.1:{args.port} · Ctrl-C to stop", flush=True)
+        parser.exit(1, "The editor could not open its local port. Another instance may already be running.\n")
+    print(f"Private Writing Editor is ready at http://127.0.0.1:{args.port} · Ctrl-C to stop", flush=True)
     try:
         server.serve_forever(poll_interval=0.2)
     except KeyboardInterrupt:

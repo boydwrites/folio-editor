@@ -34,7 +34,7 @@ final class FolioApp: NSObject, NSApplicationDelegate, NSWindowDelegate,
         window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 1280, height: 860),
                           styleMask: [.titled, .closable, .miniaturizable, .resizable],
                           backing: .buffered, defer: false)
-        window.title = "Folio"
+        window.title = "Private Writing Editor"
         window.minSize = NSSize(width: 650, height: 500)
         window.isReleasedWhenClosed = false
         window.delegate = self
@@ -43,19 +43,19 @@ final class FolioApp: NSObject, NSApplicationDelegate, NSWindowDelegate,
         window.center()
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
-        webView.loadHTMLString("<html><body style='font:18px system-ui;padding:48px;background:#f5f5ee;color:#16140f'><h1>Folio.</h1><p>Opening your writing…</p></body></html>", baseURL: nil)
+        webView.loadHTMLString("<html><body style='font:18px system-ui;padding:48px;background:#f5f5ee;color:#16140f'><h1>Private Writing Editor.</h1><p>Opening your writing…</p></body></html>", baseURL: nil)
         startServer()
     }
 
     private func makeMenu() {
         let menu = NSMenu()
         let app = NSMenuItem()
-        let appMenu = NSMenu(title: "Folio")
-        appMenu.addItem(withTitle: "About Folio", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
+        let appMenu = NSMenu(title: "Private Writing Editor")
+        appMenu.addItem(withTitle: "About Private Writing Editor", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
         appMenu.addItem(.separator())
-        appMenu.addItem(withTitle: "Hide Folio", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
+        appMenu.addItem(withTitle: "Hide Private Writing Editor", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
         appMenu.addItem(.separator())
-        appMenu.addItem(withTitle: "Quit Folio", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        appMenu.addItem(withTitle: "Quit Private Writing Editor", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         app.submenu = appMenu
         menu.addItem(app)
         let edit = NSMenuItem()
@@ -85,7 +85,7 @@ final class FolioApp: NSObject, NSApplicationDelegate, NSWindowDelegate,
             guard FileManager.default.isExecutableFile(atPath: python),
                   FileManager.default.fileExists(atPath: repository + "/folio/launch.py") else {
                 throw NSError(domain: "Folio", code: 1, userInfo: [NSLocalizedDescriptionKey:
-                    "Folio could not find its local Python runtime or project. Rebuild Folio.app using Build Folio App.command in the project folder."])
+                    "The app could not find its local Python runtime or project. Rebuild Private Writing Editor.app using Build Private Writing Editor.command in the project folder."])
             }
             let child = Process()
             let input = Pipe(), stdout = Pipe()
@@ -112,7 +112,7 @@ final class FolioApp: NSObject, NSApplicationDelegate, NSWindowDelegate,
                     // A structured startup error can arrive just before exit.
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                         if !self.stopping && !self.mayQuit {
-                            self.fail("The local Folio server stopped. Reopen Folio to continue. Your saved documents are preserved.")
+                            self.fail("The local server stopped. Reopen the app to continue. Your saved documents are preserved.")
                         }
                     }
                 }
@@ -122,7 +122,7 @@ final class FolioApp: NSObject, NSApplicationDelegate, NSWindowDelegate,
             stdout.fileHandleForWriting.closeFile()
             DispatchQueue.main.asyncAfter(deadline: .now() + 20) { [weak self] in
                 if let self, self.origin == nil && !self.stopping && !self.mayQuit {
-                    self.fail("Folio took too long to start. Check its local Python runtime and reopen the app.")
+                    self.fail("The app took too long to start. Check its local Python runtime and reopen the app.")
                 }
             }
         } catch { fail(error.localizedDescription) }
@@ -134,7 +134,7 @@ final class FolioApp: NSObject, NSApplicationDelegate, NSWindowDelegate,
             let line = output.prefix(upTo: newline)
             output.removeSubrange(...newline)
             guard let event = try? JSONSerialization.jsonObject(with: line) as? [String: String] else { continue }
-            if event["event"] == "error" { fail(event["message"] ?? "Folio could not start."); return }
+            if event["event"] == "error" { fail(event["message"] ?? "The app could not start."); return }
             if event["event"] == "ready", let value = event["url"], let url = URL(string: value),
                url.scheme == "http", url.host == "127.0.0.1", url.port != nil, !stopping {
                 origin = url
@@ -146,7 +146,7 @@ final class FolioApp: NSObject, NSApplicationDelegate, NSWindowDelegate,
     private func fail(_ message: String) {
         guard !mayQuit && !stopping else { return }
         let alert = NSAlert()
-        alert.messageText = "Folio could not open"
+        alert.messageText = "Private Writing Editor could not open"
         alert.informativeText = message
         alert.runModal()
         mayQuit = true
@@ -181,7 +181,7 @@ final class FolioApp: NSObject, NSApplicationDelegate, NSWindowDelegate,
                     NSApp.reply(toApplicationShouldTerminate: true)
                 }
             case .failure(let error):
-                self.cancelQuit("Your writing could not finish saving. Folio stayed open.\n\n" + error.localizedDescription)
+                self.cancelQuit("Your writing could not finish saving. The app stayed open.\n\n" + error.localizedDescription)
                 NSApp.reply(toApplicationShouldTerminate: false)
             }
         }
@@ -191,7 +191,7 @@ final class FolioApp: NSObject, NSApplicationDelegate, NSWindowDelegate,
     private func cancelQuit(_ message: String) {
         quitting = false
         let alert = NSAlert()
-        alert.messageText = "Folio is still open"
+        alert.messageText = "Private Writing Editor is still open"
         alert.informativeText = message
         alert.runModal()
     }
@@ -249,7 +249,7 @@ final class FolioApp: NSObject, NSApplicationDelegate, NSWindowDelegate,
         if (error as NSError).code == NSURLErrorCancelled { return }
         let alert = NSAlert()
         alert.messageText = "The export could not be saved"
-        alert.informativeText = "Your document is still in Folio. Please export it again."
+        alert.informativeText = "Your document is still in the editor. Please export it again."
         alert.beginSheetModal(for: window)
     }
 
@@ -279,7 +279,7 @@ final class FolioApp: NSObject, NSApplicationDelegate, NSWindowDelegate,
         // Reload only after informing the writer: WebKit may have lost an
         // unsaved edit when its renderer terminated.
         let alert = NSAlert()
-        alert.messageText = "Folio’s editor stopped"
+        alert.messageText = "The editor stopped"
         alert.informativeText = "Reload to reopen your last saved writing. Any changes that had not saved may be lost."
         alert.addButton(withTitle: "Reload")
         alert.beginSheetModal(for: window) { _ in webView.reload() }

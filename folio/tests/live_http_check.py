@@ -1,4 +1,4 @@
-"""Opt-in synthetic checks against an already running Folio at localhost:8765."""
+"""Opt-in synthetic checks against an already running editor at localhost:8765."""
 import http.client
 import json
 

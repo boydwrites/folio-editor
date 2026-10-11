@@ -20,5 +20,5 @@ __pycache__/
 node_modules/
 
 # Rebuildable local macOS launcher
-Folio.app/
+Private Writing Editor.app/
 folio/desktop/.build/

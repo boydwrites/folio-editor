@@ -37,7 +37,7 @@ class ImportTests(unittest.TestCase):
         self.assertEqual(extract_text("notes.md", "Board notes".encode("utf-16")), "Board notes")
 
     def test_unsupported_legacy_word_and_binary_text(self):
-        for name, data, match in [("notes.doc", b"data", "Save this file as .docx"), ("notes.exe", b"data", "Folio can import"), ("notes.txt", b"null\x00", "control characters")]:
+        for name, data, match in [("notes.doc", b"data", "Save this file as .docx"), ("notes.exe", b"data", "The editor can import"), ("notes.txt", b"null\x00", "control characters")]:
             with self.subTest(name=name), self.assertRaisesRegex(ValueError, match):
                 extract_text(name, data)
 

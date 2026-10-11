@@ -1,6 +1,6 @@
 # Local Gemma runtime
 
-Gemma 4 31B IT, six-bit MLX, runs through LM Studio’s Apple Silicon `llmster` service. The project provides terminal chat, text rewriting, and a small Word-document editing proof. It is the model foundation Folio runs on.
+Gemma 4 31B IT, six-bit MLX, runs through LM Studio’s Apple Silicon `llmster` service. The project provides terminal chat, text rewriting, and a small Word-document editing proof. It is the model foundation Private Writing Editor runs on.
 
 Chat and rewrite commands start the runtime automatically. The tests use synthetic documents, and model weights aren't included.
 
@@ -72,7 +72,7 @@ File rewriting uses Python’s standard library and `lms`. Interactive chat addi
 
 The included samples are synthetic. Generated drafts belong in the ignored `outputs/` directory. The selected model package and file hashes are recorded in `verification/model-manifest.json`; a manifest alone is not evidence of output quality.
 
-The application sends model requests to the local runtime. Model downloads and runtime updates use the internet. Folio’s app runtime applies macOS network restrictions to its model daemon while allowing localhost. This does not disconnect the Mac.
+The application sends model requests to the local runtime. Model downloads and runtime updates use the internet. Private Writing Editor’s app runtime applies macOS network restrictions to its model daemon while allowing localhost. This does not disconnect the Mac.
 
 The chat loop does not save a transcript. The runtime may use temporary local prompt-cache files; stop the daemon to end the runtime session.
 

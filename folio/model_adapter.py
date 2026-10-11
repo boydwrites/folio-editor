@@ -83,7 +83,7 @@ def _run(args, *, job=None, timeout=120, sandbox=False):
                                    stderr=subprocess.PIPE, text=True, encoding="utf-8",
                                    start_new_session=True, env={**os.environ, "NO_COLOR": "1"})
     except (OSError, baseline.GemmaError) as exc:
-        raise ModelError("The installed local model runtime is unavailable. Check LM Studio and the Folio launcher.") from exc
+        raise ModelError("The installed local model runtime is unavailable. Check LM Studio and the editor's launcher.") from exc
     if job:
         job.attach(process)
     start = time.monotonic()
@@ -96,11 +96,11 @@ def _run(args, *, job=None, timeout=120, sandbox=False):
                 if job:
                     job.check()
                 if time.monotonic() - start > timeout:
-                    raise ModelError("The local runtime took too long to respond. Restart Folio and try again.")
+                    raise ModelError("The local runtime took too long to respond. Restart the editor and try again.")
         if job:
             job.check()
         if process.returncode:
-            raise ModelError("The local runtime command failed. Close LM Studio, restart Folio, and try again.")
+            raise ModelError("The local runtime command failed. Close LM Studio, restart the editor, and try again.")
         return stdout
     finally:
         baseline._cancel(process)
@@ -185,10 +185,10 @@ class ModelAdapter:
             identity = self._identity(status.get("pid"))
             if (not identity or recorded.get("pid") != status.get("pid") or
                     recorded.get("started") != identity or status.get("isDaemon") is not True):
-                raise ModelError("LM Studio is already running outside Folio’s privacy sandbox. Quit LM Studio or run ./local-gemma/gemma stop, then try again. Folio will start its isolated local runtime.")
+                raise ModelError("LM Studio is already running outside the editor’s privacy sandbox. Quit LM Studio or run ./local-gemma/gemma stop, then try again. The editor will start its isolated local runtime.")
         else:
             if not Path("/usr/bin/sandbox-exec").is_file():
-                raise ModelError("Folio requires the macOS local-network privacy sandbox.")
+                raise ModelError("The editor requires the macOS local-network privacy sandbox.")
             emit({"type": "status", "text": "Starting the private local runtime…"})
             _run(["daemon", "up", "--json"], sandbox=True, job=job, timeout=120)
             status = _json(["daemon", "status", "--json"], job=job, timeout=15)

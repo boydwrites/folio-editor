@@ -7,10 +7,11 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[2]
-APP = ROOT / 'Folio.app'
+NAME = 'Private Writing Editor'
+APP = ROOT / f'{NAME}.app'
 CONTENTS = APP / 'Contents'
 RESOURCES = CONTENTS / 'Resources'
-BINARY = CONTENTS / 'MacOS' / 'Folio'
+BINARY = CONTENTS / 'MacOS' / NAME
 CACHE = ROOT / 'folio' / 'desktop' / '.build'
 
 
@@ -30,8 +31,8 @@ def main():
                     str(Path(__file__).with_name('Icon.swift')), str(ROOT / 'folio/static/favicon.svg'),
                     str(iconset)], check=True)
     subprocess.run(['/usr/bin/iconutil', '-c', 'icns', str(iconset), '-o', str(RESOURCES / 'Folio.icns')], check=True)
-    info = {'CFBundleName': 'Folio', 'CFBundleDisplayName': 'Folio',
-            'CFBundleIdentifier': 'local.folio.desktop', 'CFBundleExecutable': 'Folio',
+    info = {'CFBundleName': NAME, 'CFBundleDisplayName': NAME,
+            'CFBundleIdentifier': 'local.folio.desktop', 'CFBundleExecutable': NAME,
             'CFBundlePackageType': 'APPL', 'CFBundleShortVersionString': '1.0',
             'CFBundleIconFile': 'Folio.icns',
             'CFBundleVersion': '1', 'NSHighResolutionCapable': True,
@@ -40,7 +41,7 @@ def main():
             'NSHumanReadableCopyright': 'Private local writing editor'}
     (CONTENTS / 'Info.plist').write_bytes(plistlib.dumps(info))
     subprocess.run(['/usr/bin/codesign', '--force', '--sign', '-', str(APP)], check=True)
-    print(f'Built {APP}\nDouble-click Folio.app. Close its window or choose Quit Folio to stop its server.')
+    print(f'Built {APP}\nDouble-click {NAME}.app. Close its window or choose Quit {NAME} to stop its server.')
 
 
 if __name__ == '__main__':
